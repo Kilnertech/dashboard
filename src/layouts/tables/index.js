@@ -1,21 +1,22 @@
 /**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
+ * =========================================================
+ * Material Dashboard 2 React - v2.2.0
+ * =========================================================
+ *
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2023 Creative Tim (https://www.creative-tim.com)
+ *
+ * Coded by www.creative-tim.com
+ *
+ * =========================================================
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
 
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -28,11 +29,33 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
+import data from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 
+// React hooks
+import React, { useState, useEffect } from "react";
+
+// API functions
+import { callAPI, buildURL, rootAPI } from "api/callAPI";
+import { handleLoginWithGoogle } from "api/authentication"; // Adjust the path accordingly
+
 function Tables() {
-  const { columns, rows } = authorsTableData();
+  const [authorsList, setAuthorsList] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await callAPI(buildURL(rootAPI, "MEPs/mep_info?mepID=237224"), "GET");
+        setAuthorsList(data.response);
+        console.log(authorsList);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const { columns, rows } = data(authorsList);
   const { columns: pColumns, rows: pRows } = projectsTableData();
 
   return (
@@ -60,7 +83,7 @@ function Tables() {
                 <DataTable
                   table={{ columns, rows }}
                   isSorted={false}
-                  entriesPerPage={false}
+                  entriesPerPage={5}
                   showTotalEntries={false}
                   noEndBorder
                 />
