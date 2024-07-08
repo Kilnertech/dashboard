@@ -2,18 +2,10 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { callAPI, buildURL } from "api/callAPI";
+import {firebaseConfig} from  "api/firebaseConfig";
 import { useUser } from "context";
 
 const rootAPI = "https://united-wavelet-422322-m7.uc.r.appspot.com/";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCQVCOLvZtxwWnyDGBLspkAemfMDTfRjLs",
-  authDomain: "united-wavelet-422322-m7.firebaseapp.com",
-  projectId: "united-wavelet-422322-m7",
-  storageBucket: "united-wavelet-422322-m7.appspot.com",
-  messagingSenderId: "636713916940",
-  appId: "1:636713916940:web:776432bcca20499f93ac29",
-};
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
