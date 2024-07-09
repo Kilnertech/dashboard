@@ -16,7 +16,6 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -37,7 +36,6 @@ import React, { useState, useEffect } from "react";
 
 // API functions
 import { callAPI, buildURL, rootAPI } from "api/callAPI";
-import { handleLoginWithGoogle } from "api/authentication"; // Adjust the path accordingly
 
 function Tables() {
   const [authorsList, setAuthorsList] = useState([]);
@@ -45,7 +43,7 @@ function Tables() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await callAPI(buildURL(rootAPI, "MEPs/mep_info?mepID=237224"), "GET");
+        const data = await callAPI(buildURL(rootAPI, "MEPs/mep_info"), "GET");
         setAuthorsList(data.response);
         console.log(authorsList);
       } catch (error) {
@@ -76,13 +74,13 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Authors Table
+                  Who Rule
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
                   table={{ columns, rows }}
-                  isSorted={false}
+                  isSorted={true}
                   entriesPerPage={5}
                   showTotalEntries={false}
                   noEndBorder
