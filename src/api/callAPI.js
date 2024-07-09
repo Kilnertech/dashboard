@@ -48,7 +48,7 @@ const apis = (rootAPI) => ({
     rootAPI,
     `user/responses?queryID=c20ea61e-9d48-5699-ad83-9f402017180a&typeDocument=questions`
   ),
-  showMP: buildURL(rootAPI, `MEPs/mep_info?mepID=237224`),
+  showMP: buildURL(rootAPI, `MEPs/mep_info`),
   showPrompts: buildURL(rootAPI, "admin/prompts"),
   showQueries: buildURL(rootAPI, "admin/queries"),
 });
