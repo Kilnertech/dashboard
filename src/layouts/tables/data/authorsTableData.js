@@ -7,15 +7,30 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 
+// Function to convert string to Title Case
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function(txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+// Function to swap first name and last name
+function swapNameOrder(name) {
+  const [firstName, lastName] = name.split(' ');
+  return `${lastName} ${firstName}`;
+}
+
 // Function to create table data
 export default function data(authorsList) {
   // Define the Author component
-  const Author = ({ imgLink, name }) => (
+  const Author = ({ imgLink, name, href }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={imgLink} name={name} size="sm" />
       <MDBox ml={2} lineHeight={1}>
         <MDTypography display="block" variant="button" fontWeight="medium">
-          {name}
+          <a href={href} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
+            {name}
+          </a>
         </MDTypography>
       </MDBox>
     </MDBox>
@@ -25,6 +40,7 @@ export default function data(authorsList) {
   Author.propTypes = {
     imgLink: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    href: PropTypes.string.isRequired,
   };
 
   // Define the Group component
@@ -55,22 +71,68 @@ export default function data(authorsList) {
 
   // Build the rows using the authorsList
   const rows = authorsList.map((author) => ({
-    name: <Author imgLink={author.imgLink} name={author.name} />,
-    party: (
-      <MDTypography variant="caption" color="text" fontWeight="medium">
-        {author.party}
-      </MDTypography>
-    ),
-    group: <Group group={author.group} />,
-    homepage: <Homepage url={author.homepage} />,
+    mp: {
+      imgLink: author.imgLink,
+      name: toTitleCase(swapNameOrder(author.name)), // Swap name order and apply Title Case
+      href: author.homepage,
+    },
+    country: author.country,
+    party: author.party,
+    group: author.group,
+    contacts: author.homepage,
   }));
 
   return {
     columns: [
-      { Header: "name", accessor: "name", width: "30%", align: "left" },
-      { Header: "party", accessor: "party", align: "left" },
-      { Header: "group", accessor: "group", align: "left" },
-      { Header: "homepage", accessor: "homepage", align: "center" },
+      {
+        Header: "mp",
+        accessor: "mp",
+        width: "30%",
+        align: "left",
+        Cell: ({ value }) => (
+          <div>
+            <Author imgLink={value.imgLink} name={value.name} href={value.href} />
+          </div>
+        ),
+        sortType: (rowA, rowB, columnId, desc) => {
+          return rowA.original.mp.name.localeCompare(rowB.original.mp.name);
+        },
+      },
+      { 
+        Header: "party", 
+        accessor: "party", 
+        align: "left", 
+        Cell: ({ value }) => (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            {value}
+          </MDTypography>
+        ),
+      },
+      { 
+        Header: "country", 
+        accessor: "country", 
+        align: "left", 
+        Cell: ({ value }) => (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            {value}
+          </MDTypography>
+        ),
+      },
+      { 
+        Header: "group", 
+        accessor: "group", 
+        align: "left", 
+        Cell: ({ value }) => (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            {value}
+          </MDTypography>
+        )
+      },
+      // { 
+      //   Header: "contacts", 
+      //   accessor: "contacts", 
+      //   align: "center" 
+      // },
     ],
     rows,
   };
