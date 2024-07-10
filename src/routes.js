@@ -38,6 +38,9 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
+import PromptsManager from "layouts/admin";
+
+import AdminPanelSettingsTwoToneIcon from '@mui/icons-material/AdminPanelSettingsTwoTone';
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
@@ -66,20 +69,20 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "admin",
+    key: "admin",
+    icon: <AdminPanelSettingsTwoToneIcon fontSize="small" />,
+    route: "/admin",
+    component: <PromptsManager />,
+  },
+  {
+    type: "collapse",
     name: "LLM Responses",
     key: "billing",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
     component: <Billing />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "RTL",
-  //   key: "rtl",
-  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-  //   route: "/rtl",
-  //   component: <RTL />,
-  // },
   {
     type: "collapse",
     name: "Prompts & Queries",
