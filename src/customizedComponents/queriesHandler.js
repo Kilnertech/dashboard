@@ -1,137 +1,246 @@
-import { useState, useEffect } from "react";
-import { Grid, MenuItem, Select, FormControl, InputLabel, Card } from "@mui/material";
+import { useState } from "react";
+import {
+  Grid,
+  Card,
+  IconButton,
+  Typography,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import EditIcon from "@mui/icons-material/Edit";
+import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { callAPI, buildURL, rootAPI } from "api/callAPI";
+import Prompt from "customizedComponents/insertPrompt";
+import DataTable from "examples/Tables/DataTable";
+import { buildURL, rootAPI } from "api/callAPI";
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import Notification from "./notifications";
 
-function QueriesManager({ rows }) {
-  // Creo l'array di opzioni per il menu
-  const options = rows.map((value, index) => ({
-    value: value.promptID,
-    label: value.prompt, // Assumo che l'ID corretto sia value.id, controlla che sia corretto per la tua struttura dati
-  }));
+const QueriesHandler = ({rows,columns}) => {
 
-  // Inizializzo lo stato per il valore selezionato nel menu
-  const [selectedOption, setSelectedOption] = useState(options.length > 0 ? options[0].value : "");
 
-  // Stato per memorizzare i dati ottenuti dalla chiamata API
-  const [dataRows, setDataRows] = useState([]);
+  const [selectedQueryId, setSelectedQueryId] = useState("");
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editQueryText, setEditQueryText] = useState("");
+  const [notification, setNotification] = useState({
+    open: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+  const [confirmationOpen, setConfirmationOpen] = useState(false); // Stato per gestire l'apertura del dialogo di conferma
 
-  // Effetto per eseguire la chiamata API quando cambia selectedOption
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await callAPI(buildURL(rootAPI, `admin/queries?promptID=${selectedOption}`), "GET");
-        setDataRows(data.response);
-        const rowsQueries = data.response.map((item) => ({
-          date: item.date,
-          prompt: item.prompt,
-          promptID: item.id
-      
-        }));
-        setQueriesTableRows(rowsQueries);
-      
-        const columnsQueries = [
-          {
-            Header: "promptid",
-            accessor: "promptID",
-            align: "left",
-            Cell: ({ value }) => (
-              <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
-                {value}
-              </MDTypography>
-            ),
-          },
-          {
-            Header: "date",
-            accessor: "date",
-            align: "left",
-            Cell: ({ value }) => (
-              <MDTypography variant="caption" color="text" fontWeight="medium">
-                {value}
-              </MDTypography>
-            ),
-          },
-          {
-              Header: "Prompt",
-              accessor: "prompt",
-              align: "left",
-              Cell: ({ value }) => (
-                <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
-                  {value}
-                </MDTypography>
-              ),
-            },
-      
-          // You can add more columns as needed
-        ];
-        setQueriesTableColumns(columnsQueries);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+
+  const handleSaveQuery = async (queryTexy) => {
+    try {
+      console.log(queryTexy);
+      const response = await fetch(buildURL(rootAPI, 'admin/add_query'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: queryTexy }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    }
 
-    if (selectedOption !== "") {
-      fetchData();
-    }
-  }, [selectedOption]);
+      const data = await response.json();
 
-  // Gestione del cambiamento nel menu
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
+      // Mostra la notifica di successo
+      setNotification({
+        open: true,
+        type: "success",
+        title: "Query Saved",
+        message: "The Query was saved successfully: " + queryTexy.substring(0, 12) + " ...",
+      });
+
+      // Aggiorna l'interfaccia o gestisci il successo come preferisci
+      setIsAddingNew(false);
+      setIsEditing(false);
+    } catch (error) {
+      // Mostra la notifica di errore
+      setNotification({
+        open: true,
+        type: "error",
+        title: "Error Saving Prompt",
+        message: "There was an error while saving the prompt.",
+      });
+    }
+  };
+
+  const handleDeleteQuery = (row) => {
+    setSelectedQueryId(row.queryID);
+    setConfirmationOpen(true); // Apre il dialogo di conferma
+  };
+
+  const deleteQuery = async () => {
+    try {
+      // Esegui la richiesta di eliminazione
+      const response = await fetch(buildURL(rootAPI, 'admin/delete_query'), {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ queryID: selectedQueryId }), // Invia gli ID dei prompt da eliminare
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete prompts. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Mostra la notifica di successo
+      setNotification({
+        open: true,
+        type: "success",
+        title: "Query Deleted",
+        message: "The Query was deleted successfully.",
+      });
+
+      // Chiudi il dialogo di conferma
+      setConfirmationOpen(false);
+
+      // Aggiorna l'interfaccia o gestisci il successo come preferisci
+      setIsAddingNew(false);
+      setIsEditing(false);
+    } catch (error) {
+      // Mostra la notifica di errore
+      setNotification({
+        open: true,
+        type: "error",
+        title: "Error Deleting Query",
+        message: `There was an error while deleting the query: ${error}`,
+      });
+    }
+  };
+
+  const handleAddNewQuery = () => {
+    setIsAddingNew(!isAddingNew);
+  };
+
+  const handleEditQuery = (selection) => {
+    setSelectedQueryId(selection.queryID);
+    setEditQueryText(selection.query);
+    setIsEditing(true);
+    setIsAddingNew(false);
+  };
+
+  const handleSaveEditedQuery = () => {
+    console.log("Edited Query saved:", editQueryText);
+    setIsEditing(false);
+  };
+
+  const handleCancelQuery = () => {
+    setIsAddingNew(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditQueryText("");
+  };
+
+  const handleCloseDialog = () => {
+    setConfirmationOpen(false); // Chiude il dialogo di conferma
+  };
+
+  const closeNotification = () => {
+    setNotification({
+      ...notification,
+      open: false,
+    });
   };
 
   return (
-    <Grid item xs={12} md={4}>
-      <Card>
-        <MDBox
-          mx={2}
-          mt={-3}
-          py={3}
-          px={2}
-          variant="gradient"
-          bgColor="info"
-          borderRadius="lg"
-          coloredShadow="info"
-        >
-          <MDTypography variant="h6" color="white">
-            Queries Manager
-          </MDTypography>
-        </MDBox>
-        <MDBox pt={6} px={5} pb={8}>
-          <FormControl fullWidth>
-            <InputLabel id="dropdown-label">Select Prompt</InputLabel>
-            <Select
-              labelId="dropdown-label"
-              value={selectedOption}
-              onChange={handleChange}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 600, // Altezza massima del menu
-                    maxWidth: 500,
-                  },
+    <Grid item xs={12}>
+
+        <MDBox pt={3} px={2}>
+          <DataTable
+            table={{
+              columns: [
+                {
+                  Header: "",
+                  accessor: "id",
+                  align: "center",
+                  disableSortBy: true,
+                  disableToggleSortBy: true,
+                  Cell: ({ row }) => (
+                    <div>
+                      <IconButton onClick={() => handleEditQuery(row.original)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteQuery(row.original)}>
+                        <DeleteForeverRoundedIcon />
+                      </IconButton>
+                    </div>
+                  ),
                 },
-              }}
-              style={{ minHeight: 40 }} // Larghezza minima del select
-            >
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                ...columns,
+              ],
+              rows: rows.map((prompt) => ({
+                ...prompt,
+                id: prompt.id,
+              })),
+            }}
+            isSorted={true}
+            entriesPerPage={true}
+            showTotalEntries={false}
+            noEndBorder
+          />
+          {!isEditing && !isAddingNew && (
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <IconButton color="primary" onClick={handleAddNewQuery}>
+                {isAddingNew ? <CancelTwoToneIcon /> : <AddCircleTwoToneIcon />}
+              </IconButton>
+            </Box>
+          )}
+          {isAddingNew && <Prompt onSave={handleSaveQuery} onCancel={handleCancelQuery} type={"Query"}/>}
+          {isEditing && <Prompt onSave={handleSaveEditedQuery} value={editQueryText} onCancel={handleCancelEdit} type={"Query"} />}
         </MDBox>
 
-        {dataRows.map((item, index) => (
-          <MDTypography key={index} variant="body1" color="text.primary">
-            Date: {item.date}, Prompt ID: {item.id}, Prompt: {item.prompt}
-          </MDTypography>
-        ))}
-      </Card>
+      {/* Dialogo di conferma */}
+      <Dialog
+        open={confirmationOpen}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this : {selectedQueryId}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={deleteQuery} color="secondary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Notifica */}
+      <Notification
+        open={notification.open}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </Grid>
   );
-}
+};
 
-export default QueriesManager;
+export default QueriesHandler;

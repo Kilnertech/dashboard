@@ -23,7 +23,9 @@ import { buildURL, rootAPI } from "api/callAPI";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Notification from "./notifications";
 
-const PromptsHandler = ({rows,columns}) => {
+const PromptsHandler = ({rows,columns,handle}) => {
+
+
   const [selectedPromptId, setSelectedPromptId] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -166,25 +168,8 @@ const PromptsHandler = ({rows,columns}) => {
 
   return (
     <Grid item xs={12}>
-      <Card>
-        <MDBox
-          mx={2}
-          mt={-3}
-          py={3}
-          px={2}
-          variant="gradient"
-          bgColor="info"
-          borderRadius="lg"
-          coloredShadow="info"
-        >
-          <MDTypography variant="h6" color="white">
-              Prompts Manager
-          </MDTypography>
-        </MDBox>
+
         <MDBox pt={3} px={2}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h6">Prompts</Typography>
-          </Box>
           <DataTable
             table={{
               columns: [
@@ -224,10 +209,9 @@ const PromptsHandler = ({rows,columns}) => {
               </IconButton>
             </Box>
           )}
-          {isAddingNew && <Prompt onSave={handleSavePrompt} onCancel={handleCancelPrompt} />}
-          {isEditing && <Prompt onSave={handleSaveEditedPrompt} value={editPromptText} onCancel={handleCancelEdit} />}
+          {isAddingNew && <Prompt onSave={handleSavePrompt} onCancel={handleCancelPrompt} type={"Prompt"}/>}
+          {isEditing && <Prompt onSave={handleSaveEditedPrompt} value={editPromptText} onCancel={handleCancelEdit} type={"Prompt"} />}
         </MDBox>
-      </Card>
 
       {/* Dialogo di conferma */}
       <Dialog

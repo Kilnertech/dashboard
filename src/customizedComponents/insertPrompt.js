@@ -30,7 +30,7 @@ const ClearableTextField = ({ label, variant, fullWidth, value, onChange, disabl
   );
 };
 
-const Prompt = ({ onSave, onCancel, disabled, value }) => {
+const Prompt = ({ onSave, onCancel, disabled, value, type }) => {
   const [promptText, setPromptText] = useState(value);
 
   const handleClear = () => {
@@ -50,7 +50,7 @@ const Prompt = ({ onSave, onCancel, disabled, value }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2} my={2}>
       <ClearableTextField
-        label="Add new prompt"
+        label={`Add new ${type}`}
         variant="outlined"
         fullWidth
         value={promptText}
