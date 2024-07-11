@@ -1,44 +1,24 @@
 import  { useState } from 'react';
-import { Box, TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import MDButton from 'components/MDButton';
+import { ClearableTextField } from './ClearableTextField';
 
-const ClearableTextField = ({ label, variant, fullWidth, value, onChange, disabled }) => {
-  const handleClear = () => {
-    onChange({ target: { value: '' } });
-  };
+const Prompt = ({ onSave, onSaveEdit,promptID , onCancel, disabled, text }) => {
+  const [promptText, setPromptText] = useState(text);
 
-  return (
-    <TextField
-      label={label}
-      variant={variant}
-      fullWidth={fullWidth}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      multiline
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton onClick={handleClear} disabled={disabled}>
-              <ClearIcon />
-            </IconButton>
-          </InputAdornment>
-        ),
-      }}
-    />
-  );
-};
-
-const Prompt = ({ onSave, onCancel, disabled, value, type }) => {
-  const [promptText, setPromptText] = useState(value);
 
   const handleClear = () => {
     setPromptText('');
   };
 
   const handleSave = () => {
-    onSave(promptText);
+    if (onSave){
+      onSave(promptText);
+    }
+    else if (onSaveEdit){
+      onSaveEdit(promptText,promptID);
+    }
     setPromptText('');
   };
 
@@ -50,7 +30,7 @@ const Prompt = ({ onSave, onCancel, disabled, value, type }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2} my={2}>
       <ClearableTextField
-        label={`Add new ${type}`}
+        label={`Add new Prompt`}
         variant="outlined"
         fullWidth
         value={promptText}

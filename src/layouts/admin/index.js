@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Grid, MenuItem, Select, FormControl, InputLabel, Card } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import PromptsHandler from "customizedComponents/promptsHandler";
-import QueriesHandler from "customizedComponents/queriesHandler";
+import PromptsHandler from "customizedComponents/PromptsManager";
+import QueriesManager from "customizedComponents/QueriesManager";
 import { callAPI, buildURL, rootAPI } from "api/callAPI";
 import columnsPromptTable from "data/columnsPromptsTable";
 import columnsQueries from "data/columnsQueriesTable";
@@ -40,8 +40,6 @@ function PromptsManager() {
 
 
   useEffect(() => {
-    console.log(rowsPromptTable);
-    console.log("ciao - setting default values");
     if (rowsPromptTable.length > 0) {
       const opt = rowsPromptTable.map((value) => ({
         value: value.promptID,
@@ -55,10 +53,6 @@ function PromptsManager() {
     }
   }, [rowsPromptTable]);
 
-  const handle = (c) => {
-    console.log(c);
-  };
-
   // Effetto per eseguire la chiamata API quando cambia selectedValue
   useEffect(() => {
     async function fetchData() {
@@ -70,7 +64,6 @@ function PromptsManager() {
           queryID: item.queryID,
         }));
         setQueriesTableRows(rowsQueries);
-        console.log(rowsQueries);
       } catch (error) {
         console.error("Error fetching data:", error);
         setQueriesTableRows([]); // Setta queriesTableRows a lista vuota in caso di errore
@@ -84,7 +77,6 @@ function PromptsManager() {
 
   // Gestione del cambiamento nel menu
   const handleChange = (event) => {
-    console.log(event.target.value);
     setSelectedValue(event.target.value);
   };
 
@@ -108,7 +100,7 @@ function PromptsManager() {
                 Prompts Manager
               </MDTypography>
             </MDBox>
-            <PromptsHandler rows={rowsPromptTable} columns={columnsPromptTable} handle={handle} />
+            <PromptsHandler rows={rowsPromptTable} columns={columnsPromptTable} />
           </Card>
         </Grid>
 
@@ -155,7 +147,7 @@ function PromptsManager() {
                 </Select>
               </FormControl>
             </MDBox>
-            <QueriesHandler rows={queriesTableRows} columns={columnsQueries} handle={handle} />
+            <QueriesManager rows={queriesTableRows} columns={columnsQueries} promptID={selectedValue} />
           </Card>
         </Grid>
       </MDBox>

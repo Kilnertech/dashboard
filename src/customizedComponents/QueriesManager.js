@@ -1,9 +1,7 @@
 import { useState } from "react";
 import {
   Grid,
-  Card,
   IconButton,
-  Typography,
   Box,
   Dialog,
   DialogTitle,
@@ -16,19 +14,18 @@ import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import EditIcon from "@mui/icons-material/Edit";
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import Prompt from "customizedComponents/insertPrompt";
+import Query from "./InsertQuery";
 import DataTable from "examples/Tables/DataTable";
 import { buildURL, rootAPI } from "api/callAPI";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Notification from "./notifications";
 
-const QueriesHandler = ({rows,columns}) => {
+const QueriesManager = ({rows,columns,promptID}) => {
 
 
-  const [selectedQueryId, setSelectedQueryId] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedQueryId, setSelectedQueryId] = useState("");
   const [editQueryText, setEditQueryText] = useState("");
   const [notification, setNotification] = useState({
     open: false,
@@ -39,16 +36,16 @@ const QueriesHandler = ({rows,columns}) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false); // Stato per gestire l'apertura del dialogo di conferma
 
 
-  const handleSaveQuery = async (queryTexy) => {
+  const handleSaveQuery = async (query,promptID) => {
+    console.log(query,promptID);
     try {
-      console.log(queryTexy);
       const response = await fetch(buildURL(rootAPI, 'admin/add_query'), {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: queryTexy }),
+        body: JSON.stringify({ query: query, promptID: promptID }),
       });
 
       if (!response.ok) {
@@ -62,7 +59,7 @@ const QueriesHandler = ({rows,columns}) => {
         open: true,
         type: "success",
         title: "Query Saved",
-        message: "The Query was saved successfully: " + queryTexy.substring(0, 12) + " ...",
+        message: "The Query was saved successfully: " + query.substring(0, 12) + " ...",
       });
 
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
@@ -138,8 +135,44 @@ const QueriesHandler = ({rows,columns}) => {
     setIsAddingNew(false);
   };
 
-  const handleSaveEditedQuery = () => {
-    console.log("Edited Query saved:", editQueryText);
+  const handleSaveEditedQuery = async (newQuery,queryID) => {
+    console.log(newQuery,queryID);
+    try {
+      const response = await fetch(buildURL(rootAPI, 'admin/edit_query'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newQuery: newQuery, queryID: queryID }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Mostra la notifica di successo
+      setNotification({
+        open: true,
+        type: "success",
+        title: "Query Edited",
+        message: "The Query was saved Edited: " + newQuery.substring(0, 12) + " ...",
+      });
+
+      // Aggiorna l'interfaccia o gestisci il successo come preferisci
+      setIsAddingNew(false);
+      setIsEditing(false);
+    } catch (error) {
+      // Mostra la notifica di errore
+      setNotification({
+        open: true,
+        type: "error",
+        title: "Error Editing Query",
+        message: "There was an error while editing the query.",
+      });
+    }
     setIsEditing(false);
   };
 
@@ -206,8 +239,17 @@ const QueriesHandler = ({rows,columns}) => {
               </IconButton>
             </Box>
           )}
-          {isAddingNew && <Prompt onSave={handleSaveQuery} onCancel={handleCancelQuery} type={"Query"}/>}
-          {isEditing && <Prompt onSave={handleSaveEditedQuery} value={editQueryText} onCancel={handleCancelEdit} type={"Query"} />}
+          {isAddingNew && <Query 
+                            onSave={handleSaveQuery} 
+                            onCancel={handleCancelQuery} 
+                            promptID={promptID}
+                            />
+              }
+          {isEditing && <Query 
+                              onSaveEdit={handleSaveEditedQuery} 
+                              text={editQueryText} 
+                              onCancel={handleCancelEdit} 
+                              queryID={selectedQueryId} />}
         </MDBox>
 
       {/* Dialogo di conferma */}
@@ -243,4 +285,4 @@ const QueriesHandler = ({rows,columns}) => {
   );
 };
 
-export default QueriesHandler;
+export default QueriesManager;
