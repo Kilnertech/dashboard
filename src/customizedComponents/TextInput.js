@@ -1,40 +1,56 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, IconButton, InputAdornment } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import MDButton from 'components/MDButton';
 import { ClearableTextField } from './ClearableTextField';
 
-const Prompt = ({ onSave, onSaveEdit,promptID , onCancel, disabled, text }) => {
-  const [promptText, setPromptText] = useState(text);
-
+const TextInput = ({ 
+  onSave, 
+  onSaveEdit, 
+  onCancel, 
+  disabled, 
+  text, 
+  promptID, 
+  queryID, 
+  type 
+}) => {
+  const [inputText, setInputText] = useState(text);
 
   const handleClear = () => {
-    setPromptText('');
+    setInputText('');
   };
 
   const handleSave = () => {
-    if (onSave){
-      onSave(promptText);
+    if (onSave) {
+      if (type === 'Query') {
+        onSave(inputText, promptID);
+      } else if (type === 'Prompt') {
+        onSave(inputText);
+      }
+    } else if (onSaveEdit) {
+      if (type === 'Query') {
+        onSaveEdit(inputText, queryID);
+      } else if (type === 'Prompy') {
+        onSaveEdit(inputText, promptID);
+      }
     }
-    else if (onSaveEdit){
-      onSaveEdit(promptText,promptID);
-    }
-    setPromptText('');
+    setInputText('');
+    onCancel();
   };
 
   const handleCancel = () => {
-    setPromptText('');
+    setInputText('');
     onCancel();
   };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2} my={2}>
       <ClearableTextField
-        label={`Add new Prompt`}
+        label={`Add new ${type}`}
         variant="outlined"
         fullWidth
-        value={promptText}
-        onChange={(e) => setPromptText(e.target.value)}
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
         disabled={disabled}
         InputProps={{
           endAdornment: (
@@ -58,4 +74,4 @@ const Prompt = ({ onSave, onSaveEdit,promptID , onCancel, disabled, text }) => {
   );
 };
 
-export default Prompt;
+export default TextInput;

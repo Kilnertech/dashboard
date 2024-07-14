@@ -14,15 +14,16 @@ import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import EditIcon from "@mui/icons-material/Edit";
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
-import Prompt from "customizedComponents/InsertPrompt";
 import DataTable from "examples/Tables/DataTable";
 import { buildURL, rootAPI } from "api/callAPI";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
-import Notification from "./notifications";
+import Notification from "./Notifications";
+import TextInput from "./TextInput";
+import { usePromptTable } from "context";
 
-const PromptsHandler = ({rows,columns}) => {
+const PromptsManager = ({rows,columns}) => {
 
-
+  const { fetchPrompts } = usePromptTable(); // Usa il contesto
   const [selectedPromptId, setSelectedPromptId] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -52,9 +53,6 @@ const PromptsHandler = ({rows,columns}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('Prompt saved:', data);
-
       // Mostra la notifica di successo
       setNotification({
         open: true,
@@ -66,6 +64,7 @@ const PromptsHandler = ({rows,columns}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchPrompts();
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -116,6 +115,7 @@ const PromptsHandler = ({rows,columns}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchPrompts();
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -154,8 +154,6 @@ const PromptsHandler = ({rows,columns}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-
       // Mostra la notifica di successo
       setNotification({
         open: true,
@@ -167,6 +165,7 @@ const PromptsHandler = ({rows,columns}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchPrompts();
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -242,13 +241,16 @@ const PromptsHandler = ({rows,columns}) => {
               </IconButton>
             </Box>
           )}
-          {isAddingNew && <Prompt onSave={handleSavePrompt} 
+          {isAddingNew && <TextInput onSave={handleSavePrompt} 
                                   onCancel={handleCancelPrompt} 
+                                  type="Prompt"
                                   />}
-          {isEditing && <Prompt onSaveEdit={handleSaveEditedPrompt} 
+          {isEditing && <TextInput onSaveEdit={handleSaveEditedPrompt} 
                                 text={editPromptText} 
                                 onCancel={handleCancelEdit}
                                 promptID={selectedPromptId}
+                                type="Prompt"
+
                                 />}
         </MDBox>
 
@@ -285,4 +287,4 @@ const PromptsHandler = ({rows,columns}) => {
   );
 };
 
-export default PromptsHandler;
+export default PromptsManager;

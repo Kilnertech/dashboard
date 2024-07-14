@@ -14,13 +14,17 @@ import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import EditIcon from "@mui/icons-material/Edit";
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
-import Query from "./InsertQuery";
 import DataTable from "examples/Tables/DataTable";
 import { buildURL, rootAPI } from "api/callAPI";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
-import Notification from "./notifications";
+import Notification from "./Notifications";
+import TextInput from "./TextInput";
+import { useQueriesTable } from "context";
 
 const QueriesManager = ({rows,columns,promptID}) => {
+
+  const { fetchQueries } = useQueriesTable(); // Usa il contesto per queriesTableRows
+
 
 
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -37,7 +41,6 @@ const QueriesManager = ({rows,columns,promptID}) => {
 
 
   const handleSaveQuery = async (query,promptID) => {
-    console.log(query,promptID);
     try {
       const response = await fetch(buildURL(rootAPI, 'admin/add_query'), {
         method: 'POST',
@@ -52,7 +55,6 @@ const QueriesManager = ({rows,columns,promptID}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
 
       // Mostra la notifica di successo
       setNotification({
@@ -65,6 +67,7 @@ const QueriesManager = ({rows,columns,promptID}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchQueries(promptID);
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -97,7 +100,6 @@ const QueriesManager = ({rows,columns,promptID}) => {
         throw new Error(`Failed to delete prompts. Status: ${response.status}`);
       }
 
-      const data = await response.json();
 
       // Mostra la notifica di successo
       setNotification({
@@ -113,6 +115,7 @@ const QueriesManager = ({rows,columns,promptID}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchQueries(promptID);
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -151,8 +154,6 @@ const QueriesManager = ({rows,columns,promptID}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-
       // Mostra la notifica di successo
       setNotification({
         open: true,
@@ -164,6 +165,7 @@ const QueriesManager = ({rows,columns,promptID}) => {
       // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
+      fetchQueries(promptID);
     } catch (error) {
       // Mostra la notifica di errore
       setNotification({
@@ -239,17 +241,20 @@ const QueriesManager = ({rows,columns,promptID}) => {
               </IconButton>
             </Box>
           )}
-          {isAddingNew && <Query 
+          {isAddingNew && <TextInput 
                             onSave={handleSaveQuery} 
                             onCancel={handleCancelQuery} 
                             promptID={promptID}
+                            type="Query"
                             />
               }
-          {isEditing && <Query 
+          {isEditing && <TextInput 
                               onSaveEdit={handleSaveEditedQuery} 
                               text={editQueryText} 
                               onCancel={handleCancelEdit} 
-                              queryID={selectedQueryId} />}
+                              queryID={selectedQueryId}
+                              type="Query"
+                              />}
         </MDBox>
 
       {/* Dialogo di conferma */}
