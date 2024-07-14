@@ -18,8 +18,9 @@
  * you can customize the states for the different components here.
  */
 
-import React, { createContext, useContext, useState, useReducer, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect, useReducer, useMemo } from "react";
 import PropTypes from "prop-types";
+import { callAPI, buildURL, rootAPI } from "api/callAPI";
 
 // User Context
 const UserContext = createContext();
@@ -27,6 +28,14 @@ const UserContext = createContext();
 // User Provider
 export const UserProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    // Load data from localStorage as component is mounted
+    const storedUserProfile = localStorage.getItem('userProfile');
+    if (storedUserProfile) {
+      setUserProfile(JSON.parse(storedUserProfile));
+    }
+  }, []);
 
   const login = (userData) => {
     setUserProfile(userData);
@@ -54,6 +63,68 @@ export const useUser = () => {
   }
   return context;
 };
+
+
+const PromptTableContext = createContext();
+
+export const usePromptTable = () => useContext(PromptTableContext);
+
+export const PromptTableProvider = ({ children }) => {
+  const [rowsPromptTable, setRowsPromptTable] = useState([]);
+
+  const fetchPrompts = async () => {
+    try {
+      const data = await callAPI(buildURL(rootAPI, "admin/prompts"), "GET");
+      const mappedData = data.response.map((item) => ({
+        date: item.date,
+        prompt: item.prompt,
+        promptID: item.id,
+      }));
+      setRowsPromptTable(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setRowsPromptTable([]); // Set to empty array in case of error
+    }
+  };
+
+  return (
+    <PromptTableContext.Provider value={{ rowsPromptTable, setRowsPromptTable, fetchPrompts }}>
+      {children}
+    </PromptTableContext.Provider>
+  );
+};
+
+
+const QueriesTableContext = createContext();
+
+export const useQueriesTable = () => useContext(QueriesTableContext);
+
+export const QueriesTableProvider = ({ children }) => {
+  const [queriesTableRows, setQueriesTableRows] = useState([]);
+
+  const fetchQueries = async (promptID) => {
+    try {
+      const data = await callAPI(buildURL(rootAPI, `admin/queries?promptID=${promptID}`), "GET");
+      const rowsQueries = data.response.map((item) => ({
+        date: item.date,
+        query: item.query,
+        queryID: item.queryID,
+      }));
+      setQueriesTableRows(rowsQueries);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setQueriesTableRows([]); // Set to empty array in case of error
+    }
+  };
+
+  return (
+    <QueriesTableContext.Provider value={{ queriesTableRows, setQueriesTableRows, fetchQueries }}>
+      {children}
+    </QueriesTableContext.Provider>
+  );
+};
+
+
 
 // PropTypes for UserProvider
 UserProvider.propTypes = {

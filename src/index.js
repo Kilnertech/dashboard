@@ -20,6 +20,7 @@ import App from "App";
 
 // Material Dashboard 2 React Context Providers
 import { MaterialUIControllerProvider, UserProvider } from "context";
+import {PromptTableProvider, QueriesTableProvider} from "context";
 
 const container = document.getElementById("app");
 const root = createRoot(container);
@@ -27,9 +28,13 @@ const root = createRoot(container);
 root.render(
   <BrowserRouter>
     <UserProvider>
-      <MaterialUIControllerProvider>{/* Remove unnecessary line breaks here */}
-        <App />
-      </MaterialUIControllerProvider>
+      <PromptTableProvider>
+        <QueriesTableProvider>
+          <MaterialUIControllerProvider>{/* Remove unnecessary line breaks here */}
+            <App />
+          </MaterialUIControllerProvider>
+          </QueriesTableProvider>
+      </PromptTableProvider>
     </UserProvider>
   </BrowserRouter>
 );
