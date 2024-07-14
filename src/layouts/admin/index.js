@@ -5,39 +5,24 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import PromptsHandler from "customizedComponents/PromptsManager";
+import PromptsManager from "customizedComponents/PromptsManager";
 import QueriesManager from "customizedComponents/QueriesManager";
-import { callAPI, buildURL, rootAPI } from "api/callAPI";
 import columnsPromptTable from "data/columnsPromptsTable";
 import columnsQueries from "data/columnsQueriesTable";
+import { usePromptTable } from 'context'; // Importa il contesto
+import { useQueriesTable } from "context"; 
 
-function PromptsManager() {
+function Admin() {
+  const { rowsPromptTable, fetchPrompts } = usePromptTable(); // Usa il contesto per rowsPromptTable
+  const { queriesTableRows, fetchQueries } = useQueriesTable(); // Usa il contesto per queriesTableRows
 
-  const [rowsPromptTable, setRowsPromptTable] = useState([]);
-  const [options,setOptions] = useState([]);
-  const [queriesTableRows, setQueriesTableRows] = useState([]);
+  const [options, setOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState();
-  const [selectedValue, setSelectedValue] = useState("");
+  const [slectedPrompt, setSelectedPrompt] = useState("");
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await callAPI(buildURL(rootAPI, "admin/prompts"), "GET");
-        const mappedData = data.response.map((item) => ({
-          date: item.date,
-          prompt: item.prompt,
-          promptID: item.id,
-        }));
-        setRowsPromptTable(mappedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setRowsPromptTable([]); // Set to empty array in case of error
-      }
-    }
-
-    fetchData(); // Call fetchData once on mount
-  }, []);
-
+    fetchPrompts();
+  }, [])
 
   useEffect(() => {
     if (rowsPromptTable.length > 0) {
@@ -47,37 +32,22 @@ function PromptsManager() {
       }));
       setOptions(opt);
       if (opt.length > 0) {
-        setSelectedValue(opt[0].value);
+        setSelectedPrompt(opt[0].value);
         setSelectedKey(opt[0].label);
       }
     }
   }, [rowsPromptTable]);
 
-  // Effetto per eseguire la chiamata API quando cambia selectedValue
+  // this hook fetches queries each time slectedPrompt is changed
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await callAPI(buildURL(rootAPI, `admin/queries?promptID=${selectedValue}`), "GET");
-        const rowsQueries = data.response.map((item) => ({
-          date: item.date,
-          query: item.query,
-          queryID: item.queryID,
-        }));
-        setQueriesTableRows(rowsQueries);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setQueriesTableRows([]); // Setta queriesTableRows a lista vuota in caso di errore
-      }
+    if (slectedPrompt !== "") {
+      fetchQueries(slectedPrompt);
     }
-
-    if (selectedValue !== "") {
-      fetchData();
-    }
-  }, [selectedValue]);
+  }, [slectedPrompt]);
 
   // Gestione del cambiamento nel menu
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
+    setSelectedPrompt(event.target.value);
   };
 
   return (
@@ -100,7 +70,7 @@ function PromptsManager() {
                 Prompts Manager
               </MDTypography>
             </MDBox>
-            <PromptsHandler rows={rowsPromptTable} columns={columnsPromptTable} />
+            <PromptsManager rows={rowsPromptTable} columns={columnsPromptTable} />
           </Card>
         </Grid>
 
@@ -125,7 +95,7 @@ function PromptsManager() {
                 <InputLabel id="dropdown-label">Select Prompt</InputLabel>
                 <Select
                   labelId="dropdown-label"
-                  value={selectedValue}
+                  value={slectedPrompt}
                   key={selectedKey}
                   onChange={handleChange}
                   multiline
@@ -147,7 +117,7 @@ function PromptsManager() {
                 </Select>
               </FormControl>
             </MDBox>
-            <QueriesManager rows={queriesTableRows} columns={columnsQueries} promptID={selectedValue} />
+            <QueriesManager rows={queriesTableRows} columns={columnsQueries} promptID={slectedPrompt} />
           </Card>
         </Grid>
       </MDBox>
@@ -156,4 +126,4 @@ function PromptsManager() {
   );
 }
 
-export default PromptsManager;
+export default Admin;
