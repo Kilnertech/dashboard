@@ -11,15 +11,13 @@ import {
   Button,
 } from "@mui/material";
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
-import EditIcon from "@mui/icons-material/Edit";
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
-import DataTable from "examples/Tables/DataTable";
 import { buildURL, rootAPI } from "api/callAPI";
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Notification from "./Notifications";
 import TextInput from "./TextInput";
 import { usePromptTable } from "context";
+import CustomDataGrid from "./DataGrid";
 
 const PromptsManager = ({rows,columns}) => {
 
@@ -132,6 +130,7 @@ const PromptsManager = ({rows,columns}) => {
   };
 
   const handleEditPrompt = (prompt) => {
+    console.log("editing prompt");
     setSelectedPromptId(prompt.promptID);
     setEditPromptText(prompt.prompt);
     setIsEditing(true);
@@ -202,37 +201,11 @@ const PromptsManager = ({rows,columns}) => {
     <Grid item xs={12}>
 
         <MDBox pt={3} px={2}>
-          <DataTable
-            table={{
-              columns: [
-                {
-                  Header: "",
-                  accessor: "id",
-                  align: "center",
-                  disableSortBy: true,
-                  disableToggleSortBy: true,
-                  Cell: ({ row }) => (
-                    <div>
-                      <IconButton onClick={() => handleEditPrompt(row.original)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeletePrompt(row.original)}>
-                        <DeleteForeverRoundedIcon />
-                      </IconButton>
-                    </div>
-                  ),
-                },
-                ...columns,
-              ],
-              rows: rows.map((prompt) => ({
-                ...prompt,
-                id: prompt.id,
-              })),
-            }}
-            isSorted={true}
-            entriesPerPage={true}
-            showTotalEntries={false}
-            noEndBorder
+          <CustomDataGrid rows = {rows} 
+                          handleEditPrompt = {handleEditPrompt}
+                          handleDeletePrompt = {handleDeletePrompt}
+                          handleAssP
+                          
           />
           {!isEditing && !isAddingNew && (
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
