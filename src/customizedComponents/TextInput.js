@@ -30,7 +30,7 @@ const TextInput = ({
     } else if (onSaveEdit) {
       if (type === 'Query') {
         onSaveEdit(inputText, queryID);
-      } else if (type === 'Prompy') {
+      } else if (type === 'Prompt') {
         onSaveEdit(inputText, promptID);
       }
     }
