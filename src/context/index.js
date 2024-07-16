@@ -78,7 +78,7 @@ export const PromptTableProvider = ({ children }) => {
       const mappedData = data.response.map((item) => ({
         date: item.date,
         prompt: item.prompt,
-        promptID: item.id,
+        promptID: item.promptID,
       }));
       setRowsPromptTable(mappedData);
     } catch (error) {

@@ -3,7 +3,7 @@ import MDTypography from "components/MDTypography";
 
 const columnsPromptTable = [
   {
-    Header: "promptid",
+    Header: "ID",
     accessor: "promptID",
     align: "left",
     Cell: ({ value }) => (
@@ -13,7 +13,7 @@ const columnsPromptTable = [
     ),
   },
   {
-    Header: "date",
+    Header: "Date",
     accessor: "date",
     align: "left",
     Cell: ({ value }) => (
