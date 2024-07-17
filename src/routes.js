@@ -46,6 +46,8 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import LLM from "layouts/llm";
+import PoliticalCarousel from "customizedComponents/PoliticalCarousel";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -74,6 +76,14 @@ const routes = [
     icon: <AdminPanelSettingsTwoToneIcon fontSize="small" />,
     route: "/admin",
     component: <PromptsManager />,
+  },
+  {
+    type: "collapse",
+    name: "LLM",
+    key: "llm",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/llm",
+    component: <PoliticalCarousel />,
   },
   {
     type: "collapse",
