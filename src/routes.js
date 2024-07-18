@@ -39,19 +39,17 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import PromptsManager from "layouts/admin";
-
 import AdminPanelSettingsTwoToneIcon from '@mui/icons-material/AdminPanelSettingsTwoTone';
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
-import LLM from "layouts/llm";
-import PoliticalCarousel from "customizedComponents/PoliticalCarousel";
+import GradeSheets from "layouts/gradeSheets";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-
+import SummarizeIcon from '@mui/icons-material/Summarize';
 const routes = [
   {
     type: "collapse",
@@ -79,15 +77,15 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "LLM",
-    key: "llm",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/llm",
-    component: <PoliticalCarousel />,
+    name: "MPs Grade Sheets",
+    key: "gradeSheets",
+    icon: <SummarizeIcon/>,
+    route: "/gradeSheets",
+    component: <GradeSheets />,
   },
   {
     type: "collapse",
-    name: "LLM Responses",
+    name: "Billing",
     key: "billing",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
