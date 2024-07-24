@@ -18,6 +18,9 @@ import Notification from "./Notifications";
 import TextInput from "./TextInput";
 import { usePromptTable } from "context";
 import CustomDataGrid from "./DataGrid";
+import columnsPromptTable from 'data/columnsPromptsTable';
+
+
 
 const PromptsManager = ({rows,columns}) => {
 
@@ -202,9 +205,9 @@ const PromptsManager = ({rows,columns}) => {
 
         <MDBox pt={3} px={2}>
           <CustomDataGrid rows = {rows} 
-                          handleEditPrompt = {handleEditPrompt}
-                          handleDeletePrompt = {handleDeletePrompt}
-                          handleAssP
+                          columns = {columns}
+                          handleEdit = {handleEditPrompt}
+                          handleDelete = {handleDeletePrompt}
                           
           />
           {!isEditing && !isAddingNew && (

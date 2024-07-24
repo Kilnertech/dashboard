@@ -46,10 +46,12 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import GradeSheets from "layouts/gradeSheets";
+import Feed from "layouts/feed";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 import SummarizeIcon from '@mui/icons-material/Summarize';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
 const routes = [
   {
     type: "collapse",
@@ -74,6 +76,14 @@ const routes = [
     icon: <AdminPanelSettingsTwoToneIcon fontSize="small" />,
     route: "/admin",
     component: <PromptsManager />,
+  },
+  {
+    type: "collapse",
+    name: "Feed",
+    key: "feed",
+    icon: <ViewListOutlinedIcon/>,
+    route: "/feed",
+    component: <Feed />,
   },
   {
     type: "collapse",

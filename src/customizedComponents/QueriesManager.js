@@ -20,7 +20,7 @@ import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Notification from "./Notifications";
 import TextInput from "./TextInput";
 import { useQueriesTable } from "context";
-
+import CustomDataGrid from "./DataGrid";
 const QueriesManager = ({rows,columns,promptID}) => {
 
   const { fetchQueries } = useQueriesTable(); // Usa il contesto per queriesTableRows
@@ -202,37 +202,11 @@ const QueriesManager = ({rows,columns,promptID}) => {
     <Grid item xs={12}>
 
         <MDBox pt={3} px={2}>
-          <DataTable
-            table={{
-              columns: [
-                {
-                  Header: "",
-                  accessor: "id",
-                  align: "center",
-                  disableSortBy: true,
-                  disableToggleSortBy: true,
-                  Cell: ({ row }) => (
-                    <div>
-                      <IconButton onClick={() => handleEditQuery(row.original)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteQuery(row.original)}>
-                        <DeleteForeverRoundedIcon />
-                      </IconButton>
-                    </div>
-                  ),
-                },
-                ...columns,
-              ],
-              rows: rows.map((prompt) => ({
-                ...prompt,
-                id: prompt.id,
-              })),
-            }}
-            isSorted={true}
-            entriesPerPage={true}
-            showTotalEntries={false}
-            noEndBorder
+          <CustomDataGrid rows = {rows} 
+                          columns = {columns}
+                          handleEdit = {handleEditQuery}
+                          handleDelete = {handleDeleteQuery}
+                          
           />
           {!isEditing && !isAddingNew && (
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>

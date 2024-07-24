@@ -4,34 +4,33 @@ import { IconButton, Tooltip, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import MDTypography from "components/MDTypography";
-import columnsPromptTable from 'data/columnsPromptsTable';
 
 function CustomDataGrid(props) {
-  const { handleDeletePrompt, handleEditPrompt, rows } = props;
+  const { handleDelete, handleEdit, rows, columns } = props;
 
-  const formattedRows = rows.map((prompt) => ({
+  const formattedRows = rows.map((prompt, index) => ({
     ...prompt,
-    id: prompt.promptID,
+    id: index,
   }));
 
   const dataGridColumns = [
-    {
-      field: "id",
+    ...(handleDelete && handleEdit ? [{
+      field: "actions",
       headerName: "",
-      flex: 1,
+      width: 90,  // Adjust this value as needed to fit the icons
       sortable: false,
       renderCell: (params) => (
         <div>
-          <IconButton onClick={() => handleEditPrompt(params.row)}>
+          <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => handleDeletePrompt(params.row)}>
+          <IconButton onClick={() => handleDelete(params.row)}>
             <DeleteForeverRoundedIcon />
           </IconButton>
         </div>
       ),
-    },
-    ...columnsPromptTable.map((col) => ({
+    }] : []),
+    ...columns.map((col) => ({
       field: col.accessor,
       headerName: col.Header,
       flex: 1,

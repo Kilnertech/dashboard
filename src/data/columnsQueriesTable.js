@@ -3,7 +3,7 @@ import MDTypography from "components/MDTypography";
 
 const columnsQueries = [
   {
-    Header: "queryID",
+    Header: "ID",
     accessor: "queryID",
     align: "left",
     Cell: ({ value }) => (
@@ -13,7 +13,7 @@ const columnsQueries = [
     ),
   },
   {
-    Header: "date",
+    Header: "Date",
     accessor: "date",
     align: "left",
     Cell: ({ value }) => (
@@ -23,7 +23,7 @@ const columnsQueries = [
     ),
   },
   {
-    Header: "query",
+    Header: "Query",
     accessor: "query",
     align: "left",
     Cell: ({ value }) => (

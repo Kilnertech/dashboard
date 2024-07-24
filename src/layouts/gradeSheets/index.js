@@ -4,20 +4,14 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import MPInfo from '../../customizedComponents/MPInfo';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
-import { usePromptTable } from 'context';
-import { useQueriesTable } from 'context';
-import { Grid, MenuItem, Select, FormControl, InputLabel, Card, Typography, CircularProgress, Box } from '@mui/material';
+import { Grid, Typography, CircularProgress, Box } from '@mui/material';
 import { buildURL, rootAPI, callAPI } from 'api/callAPI';
+import PromptsQuerySelectors from 'customizedComponents/PromptQuerySelectors';
 
 const GradeSheets = () => {
-  const { rowsPromptTable, fetchPrompts } = usePromptTable();
-  const { queriesTableRows, fetchQueries } = useQueriesTable();
+
 
   const [LLMOutput, setLLMOutput] = useState([]);
-  const [options, setOptions] = useState([]);
-  const [optionsQuery, setOptionsQuery] = useState([]);
-  const [selectedPrompt, setSelectedPrompt] = useState('');
-  const [selectedQuery, setSelectedQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const cache = useRef({})
   const fetchLLMResponses = async (queryID) => {
@@ -25,7 +19,7 @@ const GradeSheets = () => {
     let LLMResponses;
     if (!cache.current[queryID]){
       try {
-        const data = await callAPI(buildURL(rootAPI, `user/responses?queryID=${queryID}`), "GET");
+        const data = await callAPI(buildURL(rootAPI, `user/gradeSheets?queryID=${queryID}`), "GET");
         LLMResponses = await data.response;
         LLMResponses.sort((a, b) => b.totalInterventions - a.totalInterventions);
         cache.current[queryID] = LLMResponses;
@@ -42,51 +36,6 @@ const GradeSheets = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchPrompts();
-  }, []);
-
-  useEffect(() => {
-    if (rowsPromptTable.length > 0) {
-      const opt = rowsPromptTable.map((value) => ({
-        value: value.promptID,
-        label: value.prompt,
-      }));
-      setOptions(opt);
-      if (opt.length > 0) {
-        setSelectedPrompt(opt[0].value);
-      }
-    }
-  }, [rowsPromptTable]);
-
-  useEffect(() => {
-    if (selectedPrompt !== "") {
-      fetchQueries(selectedPrompt);
-    }
-  }, [selectedPrompt]);
-
-  useEffect(() => {
-    if (queriesTableRows.length > 0) {
-      const opt = queriesTableRows.map((value) => ({
-        value: value.queryID,
-        label: value.query,
-      }));
-      setOptionsQuery(opt);
-      if (opt.length > 0) {
-        setSelectedQuery(opt[0].value);
-        fetchLLMResponses(opt[0].value);
-      }
-    }
-  }, [queriesTableRows]);
-
-  const handleChangePrompt = (event) => {
-    setSelectedPrompt(event.target.value);
-  };
-
-  const handleChangeQuery = (event) => {
-    setSelectedQuery(event.target.value);
-    fetchLLMResponses(event.target.value);
-  };
 
   return (
     <DashboardLayout>
@@ -100,60 +49,7 @@ const GradeSheets = () => {
             Using state-of-the-art AI, we monitor and analyze EU activities, identifying trends and verifying discourse in real-time. Here our Grade Sheets.
           </Typography>
         </Grid>
-        <Grid item xs={12} md={9}>
-          <Card>
-            <FormControl fullWidth>
-              <InputLabel id="dropdown-prompt-label">Select Prompt</InputLabel>
-              <Select
-                labelId="dropdown-prompt-label"
-                value={selectedPrompt}
-                onChange={handleChangePrompt}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 600,
-                      maxWidth: 500,
-                    },
-                  },
-                }}
-                style={{ minHeight: 40 }}
-              >
-                {options.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <FormControl fullWidth>
-              <InputLabel id="dropdown-query-label">Select Query</InputLabel>
-              <Select
-                labelId="dropdown-query-label"
-                value={selectedQuery}
-                onChange={handleChangeQuery}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 600,
-                      maxWidth: 500,
-                    },
-                  },
-                }}
-                style={{ minHeight: 40 }}
-              >
-                {optionsQuery.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Card>
-        </Grid>
+        <PromptsQuerySelectors onQueryUpdate = {fetchLLMResponses} />
       </Grid>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
