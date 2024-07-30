@@ -3,13 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import {
-  Box, TextField, Typography, Pagination, IconButton, Collapse,
+  Box, TextField, Typography, Pagination, IconButton, Collapse, Autocomplete, Slider, Tooltip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import SortIcon from '@mui/icons-material/Sort';
 import PromptsQuerySelectors from 'customizedComponents/PromptQuerySelectors';
 import FeedItem from './FeedItem';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 const Feed = () => {
   const [loading, setLoading] = useState(false);
@@ -18,13 +19,18 @@ const Feed = () => {
   const [feedData, setFeedData] = useState([]);
   const [displayedData, setDisplayedData] = useState([]);
   const [sortCriteria, setSortCriteria] = useState('date');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [filterStartDate, setFilterStartDate] = useState('');
   const [filterEndDate, setFilterEndDate] = useState('');
   const [filterMP, setFilterMP] = useState('');
   const [filterParty, setFilterParty] = useState('');
   const [filterGroup, setFilterGroup] = useState('');
+  const [filterTypeDocument, setFilterTypeDocument] = useState('');
+  const [filterConcernRange, setFilterConcernRange] = useState([0, 100]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [availableParties, setAvailableParties] = useState([]);
+  const [availableMPs, setAvailableMPs] = useState([]);
+  const [availableGroups, setAvailableGroups] = useState([]);
   const itemsPerPage = 10;
 
   const fetchFeed = async (queryID) => {
@@ -46,6 +52,16 @@ const Feed = () => {
       feedData = cache.current[queryID];
     }
     setFeedData(feedData);
+
+    // Extract unique and sorted values for parties, MPs, and groups
+    const parties = [...new Set(feedData.map(item => item.party))].filter(party => party).sort();
+    const MPs = [...new Set(feedData.map(item => item.name))].filter(name => name).sort();
+    const groups = [...new Set(feedData.map(item => item.group))].filter(group => group).sort();
+
+    setAvailableParties(parties);
+    setAvailableMPs(MPs);
+    setAvailableGroups(groups);
+
     setLoading(false);
   };
 
@@ -54,12 +70,15 @@ const Feed = () => {
     const startDate = new Date(filterStartDate);
     const endDate = new Date(filterEndDate);
     const dateInRange = (!filterStartDate || itemDate >= startDate) && (!filterEndDate || itemDate <= endDate);
+    const concernInRange = (item.levelOfConcern || 0) >= filterConcernRange[0] && (item.levelOfConcern || 0) <= filterConcernRange[1];
 
     return (
       dateInRange &&
+      concernInRange &&
       (item.name || '').toLowerCase().includes(filterMP.toLowerCase()) &&
       (item.party || '').toLowerCase().includes(filterParty.toLowerCase()) &&
-      (item.group || '').toLowerCase().includes(filterGroup.toLowerCase())
+      (item.group || '').toLowerCase().includes(filterGroup.toLowerCase()) &&
+      (item.typeDocument || '').toLowerCase().includes(filterTypeDocument.toLowerCase())
     );
   });
 
@@ -86,6 +105,14 @@ const Feed = () => {
         data = data.filter(item => (item.group || '').toLowerCase().includes(filterGroup.toLowerCase()));
       }
 
+      if (filterTypeDocument) {
+        data = data.filter(item => (item.typeDocument || '').toLowerCase().includes(filterTypeDocument.toLowerCase()));
+      }
+
+      if (filterConcernRange) {
+        data = data.filter(item => (item.levelOfConcern || 0) >= filterConcernRange[0] && (item.levelOfConcern || 0) <= filterConcernRange[1]);
+      }
+
       switch (sortCriteria) {
         case 'date':
           data.sort((a, b) => sortOrder === 'asc' ? new Date(a.date || '') - new Date(b.date || '') : new Date(b.date || '') - new Date(a.date || ''));
@@ -100,7 +127,7 @@ const Feed = () => {
       const startIndex = (currentPage - 1) * itemsPerPage;
       setDisplayedData(data.slice(startIndex, startIndex + itemsPerPage));
     }
-  }, [feedData, sortCriteria, sortOrder, filterStartDate, filterEndDate, filterMP, filterParty, filterGroup, currentPage]);
+  }, [feedData, sortCriteria, sortOrder, filterStartDate, filterEndDate, filterMP, filterParty, filterGroup, filterTypeDocument, filterConcernRange, currentPage]);
 
   const handleSort = (criteria) => {
     if (sortCriteria === criteria) {
@@ -109,6 +136,14 @@ const Feed = () => {
       setSortCriteria(criteria);
       setSortOrder('asc');
     }
+  };
+
+  const handleConcernChange = (event, newValue) => {
+    setFilterConcernRange(newValue);
+  };
+
+  const handleResetClick = () => {
+    setFilterConcernRange([0, 100]);
   };
 
   return (
@@ -140,27 +175,65 @@ const Feed = () => {
                 InputLabelProps={{ shrink: true }}
                 sx={{ mb: 2 }}
               />
-              <TextField
-                label="MP"
-                type="text"
+              <Autocomplete
+                options={availableMPs}
+                getOptionLabel={(option) => option}
                 value={filterMP}
-                onChange={(e) => setFilterMP(e.target.value)}
+                onChange={(e, newValue) => setFilterMP(newValue || '')}
+                renderInput={(params) => <TextField {...params} label="MP" variant="outlined" />}
                 sx={{ mb: 2 }}
               />
-              <TextField
-                label="Party"
-                type="text"
+              <Autocomplete
+                options={availableParties}
+                getOptionLabel={(option) => option}
                 value={filterParty}
-                onChange={(e) => setFilterParty(e.target.value)}
+                onChange={(e, newValue) => setFilterParty(newValue || '')}
+                renderInput={(params) => <TextField {...params} label="Party" variant="outlined" />}
                 sx={{ mb: 2 }}
               />
-              <TextField
-                label="Group"
-                type="text"
+              <Autocomplete
+                options={availableGroups}
+                getOptionLabel={(option) => option}
                 value={filterGroup}
-                onChange={(e) => setFilterGroup(e.target.value)}
+                onChange={(e, newValue) => setFilterGroup(newValue || '')}
+                renderInput={(params) => <TextField {...params} label="Group" variant="outlined" />}
                 sx={{ mb: 2 }}
               />
+              <Autocomplete
+                options={["Questions", "Debates", "Explanations of Vote"]}
+                getOptionLabel={(option) => option}
+                value={filterTypeDocument}
+                onChange={(e, newValue) => setFilterTypeDocument(newValue || '')}
+                renderInput={(params) => <TextField {...params} label="Type of Document" variant="outlined" />}
+                sx={{ mb: 2 }}
+              />
+              <Box sx={{ mb: 2 }}>
+                <Typography gutterBottom>Level of Concern</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Tooltip title={`Min: ${filterConcernRange[0]}`} placement="top">
+                    <Box sx={{ width: 50, textAlign: 'center' }}>
+                      <Typography variant="caption">{filterConcernRange[0]}</Typography>
+                    </Box>
+                  </Tooltip>
+                  <Slider
+                    value={filterConcernRange}
+                    onChange={handleConcernChange}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={100}
+                    sx={{ width: 300, mx: 2 }}
+                    valueLabelFormat={(value) => value}
+                  />
+                  <Tooltip title={`Max: ${filterConcernRange[1]}`} placement="top">
+                    <Box sx={{ width: 50, textAlign: 'center' }}>
+                      <Typography variant="caption">{filterConcernRange[1]}</Typography>
+                    </Box>
+                  </Tooltip>
+                  <IconButton onClick={handleResetClick} sx={{ ml: 2 }}>
+                    <RestartAltIcon />
+                  </IconButton>
+                </Box>
+              </Box>
             </Box>
           </Collapse>
         </Box>
