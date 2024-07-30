@@ -200,7 +200,7 @@ const Feed = () => {
                 sx={{ mb: 2 }}
               />
               <Autocomplete
-                options={["Questions", "Debates", "Explanations of Vote"]}
+                options={["Questions", "Debates", "Explanations"]}
                 getOptionLabel={(option) => option}
                 value={filterTypeDocument}
                 onChange={(e, newValue) => setFilterTypeDocument(newValue || '')}
