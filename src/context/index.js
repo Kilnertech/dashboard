@@ -79,6 +79,7 @@ export const PromptTableProvider = ({ children }) => {
         date: item.date,
         prompt: item.prompt,
         promptID: item.promptID,
+        promptTitle: item.promptTitle
       }));
       setRowsPromptTable(mappedData);
     } catch (error) {

@@ -18,14 +18,12 @@ import Notification from "./Notifications";
 import TextInput from "./TextInput";
 import { usePromptTable } from "context";
 import CustomDataGrid from "./DataGrid";
-import columnsPromptTable from 'data/columnsPromptsTable';
 
-
-
-const PromptsManager = ({rows,columns}) => {
-
-  const { fetchPrompts } = usePromptTable(); // Usa il contesto
+const PromptsManager = ({ rows, columns }) => {
+  const { fetchPrompts } = usePromptTable(); // Use context
   const [selectedPromptId, setSelectedPromptId] = useState("");
+  const [selectedPromptAgent, setSelectedPromptAgent] = useState("");
+
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editPromptText, setEditPromptText] = useState("");
@@ -35,10 +33,9 @@ const PromptsManager = ({rows,columns}) => {
     title: "",
     message: "",
   });
-  const [confirmationOpen, setConfirmationOpen] = useState(false); // Stato per gestire l'apertura del dialogo di conferma
+  const [confirmationOpen, setConfirmationOpen] = useState(false); // State for confirmation dialog
 
-
-  const handleSavePrompt = async (promptText) => {
+  const handleSavePrompt = async (promptText, promptTitle) => {
     try {
       console.log(promptText);
       const response = await fetch(buildURL(rootAPI, 'admin/add_prompt'), {
@@ -47,14 +44,14 @@ const PromptsManager = ({rows,columns}) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: promptText }),
+        body: JSON.stringify({ prompt: promptText, promptTitle: promptTitle }),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Mostra la notifica di successo
+      // Show success notification
       setNotification({
         open: true,
         type: "success",
@@ -62,12 +59,11 @@ const PromptsManager = ({rows,columns}) => {
         message: "The prompt was saved successfully: " + promptText.substring(0, 12) + " ...",
       });
 
-      // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
       fetchPrompts();
     } catch (error) {
-      // Mostra la notifica di errore
+      // Show error notification
       setNotification({
         open: true,
         type: "error",
@@ -79,20 +75,20 @@ const PromptsManager = ({rows,columns}) => {
 
   const handleDeletePrompt = (row) => {
     setSelectedPromptId(row.promptID);
-    setConfirmationOpen(true); // Apre il dialogo di conferma
+    setSelectedPromptAgent(row.promptTitle);
+    setConfirmationOpen(true); // Open confirmation dialog
   };
 
   const deletePrompt = async () => {
     try {
       const promptID = selectedPromptId;
-      // Esegui la richiesta di eliminazione
       const response = await fetch(buildURL(rootAPI, 'admin/delete_prompt'), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ promptID: promptID }), // Invia gli ID dei prompt da eliminare
+        body: JSON.stringify({ promptID: promptID }), // Send prompt ID to delete
       });
 
       if (!response.ok) {
@@ -102,7 +98,7 @@ const PromptsManager = ({rows,columns}) => {
       const data = await response.json();
       console.log('Prompt deleted:', data);
 
-      // Mostra la notifica di successo
+      // Show success notification
       setNotification({
         open: true,
         type: "success",
@@ -110,15 +106,12 @@ const PromptsManager = ({rows,columns}) => {
         message: "The prompt was deleted successfully.",
       });
 
-      // Chiudi il dialogo di conferma
       setConfirmationOpen(false);
-
-      // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
       fetchPrompts();
     } catch (error) {
-      // Mostra la notifica di errore
+      // Show error notification
       setNotification({
         open: true,
         type: "error",
@@ -140,8 +133,8 @@ const PromptsManager = ({rows,columns}) => {
     setIsAddingNew(false);
   };
 
-  const handleSaveEditedPrompt = async (newPrompt,promptID) => {
-    console.log(newPrompt,promptID);
+  const handleSaveEditedPrompt = async (newPrompt, promptID) => {
+    console.log(newPrompt, promptID);
     try {
       const response = await fetch(buildURL(rootAPI, 'admin/edit_prompt'), {
         method: 'PUT',
@@ -156,7 +149,7 @@ const PromptsManager = ({rows,columns}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Mostra la notifica di successo
+      // Show success notification
       setNotification({
         open: true,
         type: "success",
@@ -164,12 +157,11 @@ const PromptsManager = ({rows,columns}) => {
         message: "The Prompt was saved Edited: " + newPrompt.substring(0, 12) + " ...",
       });
 
-      // Aggiorna l'interfaccia o gestisci il successo come preferisci
       setIsAddingNew(false);
       setIsEditing(false);
       fetchPrompts();
     } catch (error) {
-      // Mostra la notifica di errore
+      // Show error notification
       setNotification({
         open: true,
         type: "error",
@@ -190,7 +182,7 @@ const PromptsManager = ({rows,columns}) => {
   };
 
   const handleCloseDialog = () => {
-    setConfirmationOpen(false); // Chiude il dialogo di conferma
+    setConfirmationOpen(false); // Close confirmation dialog
   };
 
   const closeNotification = () => {
@@ -201,36 +193,40 @@ const PromptsManager = ({rows,columns}) => {
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid container spacing={2} p={2}>
+      <Grid item xs={12}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-        <MDBox pt={3} px={2}>
-          <CustomDataGrid rows = {rows} 
-                          columns = {columns}
-                          handleEdit = {handleEditPrompt}
-                          handleDelete = {handleDeletePrompt}
-                          
-          />
-          {!isEditing && !isAddingNew && (
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <CustomDataGrid 
+                rows={rows} 
+                columns={columns}
+                handleEdit={handleEditPrompt}
+                handleDelete={handleDeletePrompt}
+              />
+
+          <Box display="flex" justifyContent="flex-end" mb={2} pt={3}>
+            {!isEditing && !isAddingNew && (
               <IconButton color="primary" onClick={handleAddNewPrompt}>
                 {isAddingNew ? <CancelTwoToneIcon /> : <AddCircleTwoToneIcon />}
               </IconButton>
-            </Box>
-          )}
-          {isAddingNew && <TextInput onSave={handleSavePrompt} 
-                                  onCancel={handleCancelPrompt} 
-                                  type="Prompt"
-                                  />}
-          {isEditing && <TextInput onSaveEdit={handleSaveEditedPrompt} 
-                                text={editPromptText} 
-                                onCancel={handleCancelEdit}
-                                promptID={selectedPromptId}
-                                type="Prompt"
+            )}
+          </Box>
+          {isAddingNew && <TextInput 
+            onSave={handleSavePrompt} 
+            onCancel={handleCancelPrompt} 
+            type="Prompt"
+          />}
+          {isEditing && <TextInput 
+            onSaveEdit={handleSaveEditedPrompt} 
+            text={editPromptText} 
+            onCancel={handleCancelEdit}
+            promptID={selectedPromptId}
+            type="Prompt"
+          />}
+        </Box>
+      </Grid>
 
-                                />}
-        </MDBox>
-
-      {/* Dialogo di conferma */}
+      {/* Dialog */}
       <Dialog
         open={confirmationOpen}
         onClose={handleCloseDialog}
@@ -238,7 +234,7 @@ const PromptsManager = ({rows,columns}) => {
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this : {selectedPromptId}?
+            Are you sure you want to delete this: {selectedPromptAgent}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -251,7 +247,7 @@ const PromptsManager = ({rows,columns}) => {
         </DialogActions>
       </Dialog>
 
-      {/* Notifica */}
+      {/* Notification */}
       <Notification
         open={notification.open}
         onClose={closeNotification}

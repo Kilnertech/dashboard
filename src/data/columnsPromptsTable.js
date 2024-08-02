@@ -2,16 +2,16 @@
 import MDTypography from "components/MDTypography";
 
 const columnsPromptTable = [
-  {
-    Header: "ID",
-    accessor: "promptID",
-    align: "left",
-    Cell: ({ value }) => (
-      <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
-        {value}
-      </MDTypography>
-    ),
-  },
+  // {
+  //   Header: "ID",
+  //   accessor: "promptID",
+  //   align: "left",
+  //   Cell: ({ value }) => (
+  //     <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
+  //       {value}
+  //     </MDTypography>
+  //   ),
+  // },
   {
     Header: "Date",
     accessor: "date",
@@ -22,9 +22,19 @@ const columnsPromptTable = [
       </MDTypography>
     ),
   },
+  // {
+  //   Header: "Prompt",
+  //   accessor: "prompt",
+  //   align: "left",
+  //   Cell: ({ value }) => (
+  //     <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
+  //       {value}
+  //     </MDTypography>
+  //   ),
+  // },
   {
-    Header: "Prompt",
-    accessor: "prompt",
+    Header: "Agent",
+    accessor: "promptTitle",
     align: "left",
     Cell: ({ value }) => (
       <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>

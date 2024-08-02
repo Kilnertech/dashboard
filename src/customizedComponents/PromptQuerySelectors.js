@@ -21,7 +21,7 @@ const PromptsQuerySelectors = ({ onQueryUpdate }) => {
     if (rowsPromptTable.length > 0) {
       const opt = rowsPromptTable.map((value) => ({
         value: value.promptID,
-        label: value.prompt,
+        label: value.promptTitle,
       }));
       setOptions(opt);
       if (opt.length > 0) {
@@ -65,7 +65,7 @@ const PromptsQuerySelectors = ({ onQueryUpdate }) => {
         <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Card sx={{ padding: 2, width: '100%' }}>
             <FormControl fullWidth>
-              <InputLabel id="dropdown-prompt-label">Select Prompt</InputLabel>
+              <InputLabel id="dropdown-prompt-label">Select Agent</InputLabel>
               <Select
                 labelId="dropdown-prompt-label"
                 value={selectedPrompt}

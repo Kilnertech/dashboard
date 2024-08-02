@@ -15,9 +15,11 @@ const TextInput = ({
   type 
 }) => {
   const [inputText, setInputText] = useState(text);
+  const [agentTitle, setAgentTitle] = useState('');
 
   const handleClear = () => {
     setInputText('');
+    setAgentTitle(''); // Clear agent title as well
   };
 
   const handleSave = () => {
@@ -25,7 +27,7 @@ const TextInput = ({
       if (type === 'Query') {
         onSave(inputText, promptID);
       } else if (type === 'Prompt') {
-        onSave(inputText);
+        onSave(inputText, agentTitle);
       }
     } else if (onSaveEdit) {
       if (type === 'Query') {
@@ -35,11 +37,13 @@ const TextInput = ({
       }
     }
     setInputText('');
+    setAgentTitle(''); // Clear agent title after saving
     onCancel();
   };
 
   const handleCancel = () => {
     setInputText('');
+    setAgentTitle(''); // Clear agent title on cancel
     onCancel();
   };
 
@@ -62,6 +66,25 @@ const TextInput = ({
           ),
         }}
       />
+      {type === 'Prompt' && onSave && (
+        <ClearableTextField
+          label="Agent Title"
+          variant="outlined"
+          fullWidth
+          value={agentTitle}
+          onChange={(e) => setAgentTitle(e.target.value)}
+          disabled={disabled}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClear} disabled={disabled}>
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
       <Box display="flex" justifyContent="flex-end" gap={2} width="100%">
         <MDButton variant="contained" color="error" onClick={handleCancel} disabled={disabled}>
           Cancel

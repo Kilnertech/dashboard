@@ -11,12 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
-import EditIcon from "@mui/icons-material/Edit";
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import MDBox from "components/MDBox";
-import DataTable from "examples/Tables/DataTable";
 import { buildURL, rootAPI } from "api/callAPI";
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Notification from "./Notifications";
 import TextInput from "./TextInput";
 import { useQueriesTable } from "context";
@@ -208,13 +205,13 @@ const QueriesManager = ({rows,columns,promptID}) => {
                           handleDelete = {handleDeleteQuery}
                           
           />
-          {!isEditing && !isAddingNew && (
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-              <IconButton color="primary" onClick={handleAddNewQuery}>
-                {isAddingNew ? <CancelTwoToneIcon /> : <AddCircleTwoToneIcon />}
-              </IconButton>
-            </Box>
-          )}
+          <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2} pt={3}>
+            {!isEditing && !isAddingNew && (
+                <IconButton color="primary" onClick={handleAddNewQuery}>
+                  {isAddingNew ? <CancelTwoToneIcon /> : <AddCircleTwoToneIcon />}
+                </IconButton>
+            )}
+          </Box>
           {isAddingNew && <TextInput 
                             onSave={handleSaveQuery} 
                             onCancel={handleCancelQuery} 

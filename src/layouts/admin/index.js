@@ -28,7 +28,7 @@ function Admin() {
     if (rowsPromptTable.length > 0) {
       const opt = rowsPromptTable.map((value) => ({
         value: value.promptID,
-        label: value.prompt,
+        label: value.promptTitle,
       }));
       setOptions(opt);
       if (opt.length > 0) {

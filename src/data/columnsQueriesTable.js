@@ -2,16 +2,16 @@
 import MDTypography from "components/MDTypography";
 
 const columnsQueries = [
-  {
-    Header: "ID",
-    accessor: "queryID",
-    align: "left",
-    Cell: ({ value }) => (
-      <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
-        {value}
-      </MDTypography>
-    ),
-  },
+  // {
+  //   Header: "ID",
+  //   accessor: "queryID",
+  //   align: "left",
+  //   Cell: ({ value }) => (
+  //     <MDTypography variant="caption" color="text" fontWeight="medium" noWrap>
+  //       {value}
+  //     </MDTypography>
+  //   ),
+  // },
   {
     Header: "Date",
     accessor: "date",
