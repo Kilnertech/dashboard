@@ -19,7 +19,7 @@ const GradeSheets = () => {
     let LLMResponses;
     if (!cache.current[queryID]){
       try {
-        const data = await callAPI(buildURL(rootAPI, `user/gradeSheets?queryID=${queryID}`), "GET");
+        const data = await callAPI(buildURL(rootAPI, `user/grade_sheets?queryID=${queryID}`), "GET");
         LLMResponses = await data.response;
         LLMResponses.sort((a, b) => b.totalInterventions - a.totalInterventions);
         cache.current[queryID] = LLMResponses;
