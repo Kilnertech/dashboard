@@ -58,7 +58,7 @@ const parseQuestions = (questionsString) => {
   }
 };
 
-const FeedItem = ({ loading, data, filterMP, setFilterMP }) => {
+const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
   const [expandedItem, setExpandedItem] = useState(null);
 
   if (loading) {
@@ -71,11 +71,10 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP }) => {
 
   const handleAvatarClick = (name) => {
     if (filterMP.toLowerCase() === name.toLowerCase()) {
-      console.log('Deselection');
       setFilterMP(''); // Deselect if already selected
     } else {
-      console.log(name);
       setFilterMP(name); // Set the filter to the selected MP
+      setCurrentPage(1);
     }
   };
 
