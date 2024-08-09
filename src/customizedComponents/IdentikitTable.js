@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Grid, Card } from '@mui/material';
+import { Grid, Card, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import MDBox from 'components/MDBox';
 import MDAvatar from 'components/MDAvatar';
@@ -19,20 +19,23 @@ function swapNameOrder(name) {
   return `${lastName} ${firstName}`;
 }
 
-export function CreateAuthorsTableData() {
+export function CreateAuthorsTableData(term) {
   const [mepList, setMepList] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await callAPI(buildURL(rootAPI, 'MEPs/mep_info'), 'GET');
+        const data = await callAPI(
+          buildURL(rootAPI, `MEPs/mep_info?term=${term}`),
+          'GET'
+        );
         setMepList(data.response);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     }
     fetchData();
-  }, []);
+  }, [term]);
 
   const rows = mepList.map((author, index) => ({
     id: index,
@@ -66,7 +69,7 @@ export function CreateAuthorsTableData() {
             <MDTypography display="block" variant="button" fontWeight="medium">
               <a
                 href={value.href}
-                rel="noopener noreferrer" 
+                rel="noopener noreferrer"
                 target="_blank"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
@@ -118,7 +121,8 @@ export function CreateAuthorsTableData() {
 }
 
 function IdentikitTable() {
-  const { columns, sortedRows } = CreateAuthorsTableData();
+  const [term, setTerm] = useState('9'); // Default term is '9'
+  const { columns, sortedRows } = CreateAuthorsTableData(term);
 
   return (
     <Grid item xs={12}>
@@ -136,6 +140,70 @@ function IdentikitTable() {
           <MDTypography variant="h6" color="white">
             Who Rule
           </MDTypography>
+          {/* Term Switcher */}
+          <MDBox mt={2} display="flex" justifyContent="left">
+            <ToggleButtonGroup
+              value={term}
+              exclusive
+              onChange={(e, newTerm) => {
+                if (newTerm) setTerm(newTerm);
+              }}
+              aria-label="term switcher"
+              sx={{
+                borderRadius: '20px',
+                overflow: 'hidden',
+                '& .MuiToggleButtonGroup-grouped': {
+                  border: 'none',
+                  borderRadius: '20px',
+                },
+              }}
+            >
+              <ToggleButton
+                value="9"
+                aria-label="Term 9"
+                sx={{
+                  borderRadius: '20px',
+                  color: term === '9' ? 'white' : 'text.secondary',
+                  backgroundColor: term === '9' ? 'green' : 'background.default',
+                  fontSize: '0.75rem', // smaller font size
+                  padding: '4px 8px', // reduced padding
+                  border: '1px solid', // optional: to ensure the border color is applied
+                  borderColor: term === '9' ? 'darkgreen' : 'transparent',
+                  '&.Mui-selected': {
+                    backgroundColor: 'green !important', // override default background
+                    color: 'white !important', // override text color
+                  },
+                  '&:hover': {
+                    backgroundColor: term === '9' ? 'darkgreen' : 'action.hover',
+                  },
+                }}
+              >
+                Term 9
+              </ToggleButton>
+              <ToggleButton
+                value="10"
+                aria-label="Term 10"
+                sx={{
+                  borderRadius: '20px',
+                  color: term === '10' ? 'white' : 'text.secondary',
+                  backgroundColor: term === '10' ? 'green' : 'background.default',
+                  fontSize: '0.75rem', // smaller font size
+                  padding: '4px 8px', // reduced padding
+                  border: '1px solid', // optional: to ensure the border color is applied
+                  borderColor: term === '10' ? 'darkgreen' : 'transparent',
+                  '&.Mui-selected': {
+                    backgroundColor: 'green !important', // override default background
+                    color: 'white !important', // override text color
+                  },
+                  '&:hover': {
+                    backgroundColor: term === '10' ? 'darkgreen' : 'action.hover',
+                  },
+                }}
+              >
+                Term 10
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </MDBox>
         </MDBox>
         <MDBox pt={3} px={3} pb={3}>
           <div style={{ height: 600, width: '100%' }}>
