@@ -252,7 +252,7 @@ const Feed = () => {
         </Box>
 
         {/* Feed Data */}
-        <FeedItem loading={loading} data={displayedData} />
+        <FeedItem loading={loading} data={displayedData} filterMP={filterMP} setFilterMP={setFilterMP} />
 
         {/* Pagination */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>

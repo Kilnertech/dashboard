@@ -3,7 +3,6 @@ import { Card, CardContent, Typography, Box, IconButton, Avatar, Chip, List, Lis
 import { Facebook, Twitter, Instagram, Email, Public } from '@mui/icons-material';
 import { styled } from '@mui/system';
 
-// Styled Button with dynamic color
 const DynamicButton = styled(Button)(({ theme, color }) => ({
   backgroundColor: theme.palette[color]?.main || theme.palette.primary.main,
   color: '#fff',
@@ -59,7 +58,7 @@ const parseQuestions = (questionsString) => {
   }
 };
 
-const FeedItem = ({ loading, data }) => {
+const FeedItem = ({ loading, data, filterMP, setFilterMP }) => {
   const [expandedItem, setExpandedItem] = useState(null);
 
   if (loading) {
@@ -70,20 +69,53 @@ const FeedItem = ({ loading, data }) => {
     setExpandedItem(expandedItem === index ? null : index);
   };
 
+  const handleAvatarClick = (name) => {
+    if (filterMP.toLowerCase() === name.toLowerCase()) {
+      console.log('Deselection');
+      setFilterMP(''); // Deselect if already selected
+    } else {
+      console.log(name);
+      setFilterMP(name); // Set the filter to the selected MP
+    }
+  };
+
   return (
     <Box sx={{ width: '100%', padding: 2 }}>
       {data.map((item, index) => {
         const documentColor = getDocumentColor(item.typeDocument);
+        const isSelected = filterMP === item.name;
 
         return (
           <Card key={index} sx={{ mb: 2, p: 2, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {/* Avatar Image */}
+                {/* Avatar Image with click handling */}
                 {item.imgLink ? (
-                  <Avatar alt={item.name} src={item.imgLink} sx={{ width: 56, height: 56, mr: 2 }} />
+                  <Avatar
+                    alt={item.name}
+                    src={item.imgLink}
+                    onClick={() => handleAvatarClick(item.name)}
+                    sx={{
+                      width: 120,
+                      height: 120,
+                      mr: 2,
+                      border: isSelected ? '3px solid #1976d2' : 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
                 ) : (
-                  <Avatar sx={{ width: 56, height: 56, mr: 2 }}>{item.name ? item.name[0] : '?'}</Avatar>
+                  <Avatar
+                    onClick={() => handleAvatarClick(item.name)}
+                    sx={{
+                      width: 120,
+                      height: 120,
+                      mr: 2,
+                      border: isSelected ? '3px solid #1976d2' : 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {item.name ? item.name[0] : '?'}
+                  </Avatar>
                 )}
                 {/* Title and MP Name */}
                 <Box>
@@ -114,15 +146,50 @@ const FeedItem = ({ loading, data }) => {
                 <Typography variant="body2" color="textSecondary">
                   {item.country || 'No Country'}
                 </Typography>
+                {item.email && (
+                  <IconButton href={`mailto:${reverseString(item.email)}`} aria-label="email">
+                    <Email />
+                  </IconButton>
+                )}
+                {item.facebook && (
+                  <IconButton href={item.facebook} aria-label="facebook" target="_blank" rel="noopener noreferrer">
+                    <Facebook />
+                  </IconButton>
+                )}
+                {item.twitter && (
+                  <IconButton href={item.twitter} aria-label="twitter" target="_blank" rel="noopener noreferrer">
+                    <Twitter />
+                  </IconButton>
+                )}
+                {item.instagram && (
+                  <IconButton href={item.instagram} aria-label="instagram" target="_blank" rel="noopener noreferrer">
+                    <Instagram />
+                  </IconButton>
+                )}
+                {item.homePage && (
+                  <IconButton href={item.homePage} aria-label="homepage" target="_blank" rel="noopener noreferrer">
+                    <Public />
+                  </IconButton>
+                )}
               </Box>
             </CardContent>
+            
             <CardContent>
               {/* Title linked to URL */}
-              {item.title && item.url && (
+              {item.title && (
                 <Typography variant="h4" gutterBottom>
-                  <a href={replaceXmlWithHtml(item.url)} target="_blank" rel="noopener noreferrer">
-                    {item.title}
-                  </a>
+                  {item.url ? (
+                    <a
+                      href={replaceXmlWithHtml(item.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'black', textDecoration: 'none' }}
+                    >
+                      {item.title}
+                    </a>
+                  ) : (
+                    item.title
+                  )}
                 </Typography>
               )}
               <Typography variant="subtitle2" gutterBottom>
@@ -138,7 +205,7 @@ const FeedItem = ({ loading, data }) => {
                 {item.response || 'No Response'}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Level of Concern: {parseInt(item.levelOfConcern) || 'N/A'}
+                Level of Concern: {Math.floor(item.levelOfConcern)}
               </Typography>
 
               {/* Conditional Rendering for Questions, Explanations, and Debates */}
@@ -232,34 +299,6 @@ const FeedItem = ({ loading, data }) => {
                 </Box>
               )}
 
-              {/* Social Media and Contact */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                {item.email && (
-                  <IconButton href={`mailto:${reverseString(item.email)}`} aria-label="email">
-                    <Email />
-                  </IconButton>
-                )}
-                {item.facebook && (
-                  <IconButton href={item.facebook} aria-label="facebook" target="_blank" rel="noopener noreferrer">
-                    <Facebook />
-                  </IconButton>
-                )}
-                {item.twitter && (
-                  <IconButton href={item.twitter} aria-label="twitter" target="_blank" rel="noopener noreferrer">
-                    <Twitter />
-                  </IconButton>
-                )}
-                {item.instagram && (
-                  <IconButton href={item.instagram} aria-label="instagram" target="_blank" rel="noopener noreferrer">
-                    <Instagram />
-                  </IconButton>
-                )}
-                {item.homePage && (
-                  <IconButton href={item.homePage} aria-label="homepage" target="_blank" rel="noopener noreferrer">
-                    <Public />
-                  </IconButton>
-                )}
-              </Box>
             </CardContent>
             {/* Original Source Link at the end of the card */}
             {item.url && (

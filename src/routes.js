@@ -63,7 +63,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "MPs Identikit",
+    name: "MEPs Identikit",
     key: "tables",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/tables",
@@ -87,7 +87,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "MPs Grade Sheets",
+    name: "MEPs Grade Sheets",
     key: "gradeSheets",
     icon: <SummarizeIcon/>,
     route: "/gradeSheets",
