@@ -22,6 +22,7 @@ function swapNameOrder(name) {
 export function CreateAuthorsTableData(term) {
   const [mepList, setMepList] = useState([]);
 
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -121,8 +122,9 @@ export function CreateAuthorsTableData(term) {
 }
 
 function IdentikitTable() {
-  const [term, setTerm] = useState('9'); // Default term is '9'
+  const [term, setTerm] = useState('10'); // Default term is '10'
   const { columns, sortedRows } = CreateAuthorsTableData(term);
+  const terms = ['9', '10'];
 
   return (
     <Grid item xs={12}>
@@ -142,67 +144,48 @@ function IdentikitTable() {
           </MDTypography>
           {/* Term Switcher */}
           <MDBox mt={2} display="flex" justifyContent="left">
-            <ToggleButtonGroup
-              value={term}
-              exclusive
-              onChange={(e, newTerm) => {
-                if (newTerm) setTerm(newTerm);
-              }}
-              aria-label="term switcher"
-              sx={{
+          <ToggleButtonGroup
+            value={term}
+            exclusive
+            onChange={(e, newTerm) => {
+              if (newTerm) setTerm(newTerm);
+            }}
+            aria-label="term switcher"
+            sx={{
+              borderRadius: '20px',
+              overflow: 'hidden',
+              '& .MuiToggleButtonGroup-grouped': {
+                border: 'none',
                 borderRadius: '20px',
-                overflow: 'hidden',
-                '& .MuiToggleButtonGroup-grouped': {
-                  border: 'none',
-                  borderRadius: '20px',
-                },
-              }}
-            >
+              },
+            }}
+          >
+            {terms.map((termValue) => (
               <ToggleButton
-                value="9"
-                aria-label="Term 9"
+                key={termValue}
+                value={termValue}
+                aria-label={`Term ${termValue}`}
                 sx={{
                   borderRadius: '20px',
-                  color: term === '9' ? 'white' : 'text.secondary',
-                  backgroundColor: term === '9' ? 'green' : 'background.default',
-                  fontSize: '0.75rem', // smaller font size
-                  padding: '4px 8px', // reduced padding
-                  border: '1px solid', // optional: to ensure the border color is applied
-                  borderColor: term === '9' ? 'darkgreen' : 'transparent',
+                  color: term === termValue ? 'white' : 'text.secondary',
+                  backgroundColor: term === termValue ? 'grey' : 'background.default',
+                  fontSize: '0.75rem',
+                  padding: '4px 8px',
+                  border: '1px solid',
+                  borderColor: term === termValue ? 'darkgrey' : 'transparent',
                   '&.Mui-selected': {
-                    backgroundColor: 'green !important', // override default background
-                    color: 'white !important', // override text color
+                    backgroundColor: 'grey !important',
+                    color: 'white !important',
                   },
                   '&:hover': {
-                    backgroundColor: term === '9' ? 'darkgreen' : 'action.hover',
+                    backgroundColor: term === termValue ? 'darkgrey' : 'action.hover',
                   },
                 }}
               >
-                Term 9
+                Term {termValue}
               </ToggleButton>
-              <ToggleButton
-                value="10"
-                aria-label="Term 10"
-                sx={{
-                  borderRadius: '20px',
-                  color: term === '10' ? 'white' : 'text.secondary',
-                  backgroundColor: term === '10' ? 'green' : 'background.default',
-                  fontSize: '0.75rem', // smaller font size
-                  padding: '4px 8px', // reduced padding
-                  border: '1px solid', // optional: to ensure the border color is applied
-                  borderColor: term === '10' ? 'darkgreen' : 'transparent',
-                  '&.Mui-selected': {
-                    backgroundColor: 'green !important', // override default background
-                    color: 'white !important', // override text color
-                  },
-                  '&:hover': {
-                    backgroundColor: term === '10' ? 'darkgreen' : 'action.hover',
-                  },
-                }}
-              >
-                Term 10
-              </ToggleButton>
-            </ToggleButtonGroup>
+            ))}
+          </ToggleButtonGroup>
           </MDBox>
         </MDBox>
         <MDBox pt={3} px={3} pb={3}>

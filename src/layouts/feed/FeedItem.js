@@ -4,10 +4,10 @@ import { Facebook, Twitter, Instagram, Email, Public } from '@mui/icons-material
 import { styled } from '@mui/system';
 
 const DynamicButton = styled(Button)(({ theme, color }) => ({
-  backgroundColor: theme.palette[color]?.main || theme.palette.primary.main,
+  backgroundColor: color === 'grey' ? theme.palette.grey[500] : theme.palette[color]?.main || theme.palette.primary.main,
   color: '#fff',
   '&:hover': {
-    backgroundColor: theme.palette[color]?.dark || theme.palette.primary.dark,
+    backgroundColor: color === 'grey' ? theme.palette.grey[700] : theme.palette[color]?.dark || theme.palette.primary.dark,
   },
 }));
 
@@ -31,13 +31,13 @@ const replaceXmlWithHtml = (url) => {
 const getDocumentColor = (type) => {
   switch (type) {
     case 'questions':
-      return 'primary';
+      return { color: 'primary', custom: false };
     case 'debates':
-      return 'secondary';
+      return { color: 'secondary', custom: false };
     case 'explanations':
-      return 'success';
+      return { color: '#61b6cf', custom: true };
     default:
-      return 'default';
+      return { color: 'default', custom: false };
   }
 };
 
@@ -127,10 +127,15 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                   {item.typeDocument && (
                     <Chip
                       label={item.typeDocument}
-                      color={documentColor}
+                      color={documentColor.custom ? undefined : documentColor.color} // Use the predefined color if not custom
                       size="small"
-                      sx={{ mt: 1 }}
+                      sx={{ 
+                        mt: 1, 
+                        backgroundColor: documentColor.custom ? documentColor.color : undefined, 
+                        color: documentColor.custom ? '#fff' : undefined 
+                      }}
                     />
+
                   )}
                 </Box>
               </Box>
@@ -176,13 +181,13 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
             <CardContent>
               {/* Title linked to URL */}
               {item.title && (
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" gutterBottom style={{ color: 'black' }}>
                   {item.url ? (
                     <a
                       href={replaceXmlWithHtml(item.url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: 'black', textDecoration: 'none' }}
+                      style={{ color: 'inherit', textDecoration: 'none' }} // inherit color from Typography
                     >
                       {item.title}
                     </a>
@@ -214,7 +219,7 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                     <>
                       <DynamicButton
                         variant="contained"
-                        color={documentColor}
+                        color="grey"  // Set to grey
                         onClick={() => handleExpandClick(index)}
                         sx={{ mb: 1 }}
                       >
@@ -244,7 +249,6 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                               </List>
                             </>
                           ) : null}
-
                         </Box>
                       )}
                     </>
@@ -254,7 +258,7 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                     <Box sx={{ mt: 1 }}>
                       <DynamicButton
                         variant="contained"
-                        color={documentColor}
+                        color="grey"  // Set to grey
                         onClick={() => handleExpandClick(index)}
                         sx={{ mb: 1 }}
                       >
@@ -277,7 +281,7 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                     <Box sx={{ mt: 1 }}>
                       <DynamicButton
                         variant="contained"
-                        color={documentColor}
+                        color="grey"  // Set to grey
                         onClick={() => handleExpandClick(index)}
                         sx={{ mb: 1 }}
                       >
@@ -297,7 +301,6 @@ const FeedItem = ({ loading, data, filterMP, setFilterMP, setCurrentPage }) => {
                   )}
                 </Box>
               )}
-
             </CardContent>
             {/* Original Source Link at the end of the card */}
             {item.url && (
