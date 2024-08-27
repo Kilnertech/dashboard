@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { callAPI, buildURL } from "api/callAPI";
 import {firebaseConfig} from  "api/firebaseConfig";
-import { useUser } from "context";
+import { useUser } from "context/UserContext";
 
 const rootAPI = "https://united-wavelet-422322-m7.uc.r.appspot.com/";
 

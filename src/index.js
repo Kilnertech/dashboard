@@ -19,8 +19,10 @@ import { BrowserRouter } from "react-router-dom";
 import App from "App";
 
 // Material Dashboard 2 React Context Providers
-import { MaterialUIControllerProvider, UserProvider } from "context";
-import {PromptTableProvider, QueriesTableProvider} from "context";
+import { MaterialUIControllerProvider} from "context";
+import { UserProvider } from "context/UserContext";
+import {PromptTableProvider} from "context/PromptTableContext";
+import {QueriesTableProvider} from "context/QueriesTableContext"
 
 const container = document.getElementById("app");
 const root = createRoot(container);
@@ -30,7 +32,7 @@ root.render(
     <UserProvider>
       <PromptTableProvider>
         <QueriesTableProvider>
-          <MaterialUIControllerProvider>{/* Remove unnecessary line breaks here */}
+          <MaterialUIControllerProvider>
             <App />
           </MaterialUIControllerProvider>
           </QueriesTableProvider>

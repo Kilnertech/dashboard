@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { usePromptTable } from 'context';
-import { useQueriesTable } from 'context';
+import { usePromptTable } from 'context/PromptTableContext';
+import { useQueriesTable } from 'context/QueriesTableContext';
 import { Grid, MenuItem, Select, FormControl, InputLabel, Card, Box } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 

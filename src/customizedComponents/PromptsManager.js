@@ -12,11 +12,10 @@ import {
 } from "@mui/material";
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
-import MDBox from "components/MDBox";
 import { buildURL, rootAPI } from "api/callAPI";
 import Notification from "./Notifications";
 import TextInput from "./TextInput";
-import { usePromptTable } from "context";
+import { usePromptTable } from "context/PromptTableContext";
 import CustomDataGrid from "./DataGrid";
 
 const PromptsManager = ({ rows, columns }) => {

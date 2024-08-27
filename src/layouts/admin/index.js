@@ -9,8 +9,8 @@ import PromptsManager from "customizedComponents/PromptsManager";
 import QueriesManager from "customizedComponents/QueriesManager";
 import columnsPromptTable from "data/columnsPromptsTable";
 import columnsQueries from "data/columnsQueriesTable";
-import { usePromptTable } from 'context'; // Importa il contesto
-import { useQueriesTable } from "context"; 
+import { usePromptTable } from 'context/PromptTableContext'; // Importa il contesto
+import { useQueriesTable } from "context/QueriesTableContext"; 
 
 function Admin() {
   const { rowsPromptTable, fetchPrompts } = usePromptTable(); // Usa il contesto per rowsPromptTable

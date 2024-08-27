@@ -16,7 +16,7 @@ import MDBox from "components/MDBox";
 import { buildURL, rootAPI } from "api/callAPI";
 import Notification from "./Notifications";
 import TextInput from "./TextInput";
-import { useQueriesTable } from "context";
+import { useQueriesTable } from "context/QueriesTableContext";
 import CustomDataGrid from "./DataGrid";
 const QueriesManager = ({rows,columns,promptID}) => {
 

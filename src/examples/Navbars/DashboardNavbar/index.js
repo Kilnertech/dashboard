@@ -25,7 +25,7 @@ import {
   setOpenConfigurator,
 } from "context";
 import { useHandleLoginWithGoogle } from "api/authentication";
-import { useUser } from "context"; // Adjust the import path to your UserContext
+import { useUser } from "context/UserContext"; // Adjust the import path to your UserContext
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
