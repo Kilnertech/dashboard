@@ -41,9 +41,11 @@ import PromptsManager from "layouts/admin";
 import AdminPanelSettingsTwoToneIcon from '@mui/icons-material/AdminPanelSettingsTwoTone';
 import GradeSheets from "layouts/gradeSheets";
 import Feed from "layouts/feed";
+import Chat from "layouts/chatbot";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
 const routes = [
@@ -79,6 +81,14 @@ const routes = [
     icon: <SummarizeIcon/>,
     route: "/gradeSheets",
     component: <GradeSheets />,
+  },
+  {
+    type: "collapse",
+    name: "ChatBot",
+    key: "chat",
+    icon: <SmartToyIcon/>,
+    route: "/chat",
+    component: <Chat />,
   },
 ];
 
