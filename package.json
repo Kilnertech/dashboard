@@ -20,6 +20,7 @@
     "@mui/lab": "^5.0.0-alpha.172",
     "@mui/material": "5.12.3",
     "@mui/x-data-grid": "^7.10.0",
+    "axios": "^1.7.5",
     "chart.js": "4.3.0",
     "chroma-js": "2.4.2",
     "firebase": "^10.12.3",
